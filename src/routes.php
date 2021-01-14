@@ -18,3 +18,13 @@ $app->post('/test', function (Request $request, Response $response, $args) {
 
     return $response->withHeader('Location', $this->router->pathFor('index'));
 })->setName('redir');
+
+
+/* Seznam vsech osob */
+
+$app->get('/persons', function (Request $request, Response $response, $args) {
+	$stmt = $this->db->query('SELECT * FROM person ORDER BY first_name'); 
+
+	$osoby = $stmt->fetchall(); 
+	echo var_dump($osoby);
+});
