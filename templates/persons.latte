@@ -1,0 +1,83 @@
+{extends layout.latte}
+
+{block title}
+	Persons list
+{/block}
+
+{block body}
+	<div class="container md-5">
+		<form action="{link search}" method="get">
+			<label>Search:</label>
+			<input type="text" name="q" class="form-control">
+			<br>
+			<button type="submit" class="btn btn-primary">
+				Search
+			</button>
+		</form>
+
+		<a href="{link newPerson}" class="btn btn-success">
+			<span class="fa fa-angry"></span> Add new person
+		</a>
+
+		<table class="table table-hover table-striped">
+			<tr>
+				<th>First name</th>
+				<th>Last name</th>
+				<th>Height</th>
+				<th>Gender</th>
+				<th colspan="2" class="text-center">Action</th>
+			</tr>
+			{foreach $persons_list as $p}
+				<tr> 
+					<td>{$p['first_name']}</td>
+					<td>{$p['last_name']}</td>
+					<td>{$p['height']}</td>
+					<td>{$p['gender']}</td>
+
+					{if $_COOKIE['token']}
+						<td class="text-center">
+							<a href="{link updatePerson}?id_person={$p['id_person']}">
+								<button class="btn-sm btn-primary">
+									<span class="fa fa-edit"></span> Edit
+								</button>
+							</a>
+						</td>
+						<td class="text-center">
+							<form method="post" onsubmit="return confirmDelete({$p['first_name']} + ' ' + {$p['last_name']})" action="{link person_delete}?id_person={$p['id_person']}">
+								<button class="btn-sm btn-danger">
+									<span class="fa fa-trash"></span> Delete
+								</button>
+							</form>
+						</td>
+					{else} 
+						<td colspan="2" class="text-center">We don't do that here...</td>
+					{/if}
+				</tr>
+			{/foreach}
+		</table>
+
+		<!-- Strankovanie -->
+		<table id="pagination">
+			<tr>
+				{for $i = 0; $i < $total_pages; $i++}
+					<td>
+						{if $i == $page} 
+							<span class="btn btn-sm btn-primary">{$i + 1}</span>
+						{else}
+							<a href="{link persons}?page={$i}&limit={$limit}">{$i + 1}</a>
+						{/if}
+					</td>
+				{/for}
+			</tr>
+		</table>
+
+
+	</div>
+
+	<script type="text/javascript">
+		function confirmDelete(name) {
+			return confirm('Do you really want to delete ' + name + '?');
+		}
+	</script>
+
+{/block}

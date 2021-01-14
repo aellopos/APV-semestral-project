@@ -1,0 +1,17 @@
+{block menu}
+	<nav>
+		<ul>
+			<li><a href="{link index}">Home</a></li>
+			<li><a href="{link persons}">Persons list</a></li>
+			<li><a href="#">Locations</a></li>
+			{if $_COOKIE['token']}
+				<li><a href="{link logout}">Logout</a></li>
+			
+			{else}
+				<li><a href="{link login}">Login</a></li>
+				<li><a href="{link register}">Register</a></li>
+			{/if}
+
+		</ul>
+	</nav>
+{/block menu}
