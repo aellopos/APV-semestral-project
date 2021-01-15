@@ -24,6 +24,7 @@ Persons list
                 <th>Last name</th>
                 <th>Height</th>
                 <th>Gender</th>
+                <th>Edit</th>
             </tr>
 
             {foreach $persons_list as $p}
@@ -32,6 +33,13 @@ Persons list
                     <td>{$p['last_name']}</td>
                     <td>{$p['height']}</td>
                     <td>{$p['gender']}</td>
+                    <td>
+                        <a href="{link updatePerson}?id_person={$p['id_person']}">
+                            <button class="btn-sm btn-primary">
+                                <span class="fa fa-edit"></span>
+                            </button>
+                        </a>
+                    </td>
                 </tr>
             {/foreach}
         </table>

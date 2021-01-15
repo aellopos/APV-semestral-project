@@ -60,23 +60,62 @@ $app->get('/person', function (Request $request, Response $response, $args) {
 
 /* update */
 $app->get('/person/update', function (Request $request, Response $response, $args) {
-    $tplVars['formData'] = [
-        'first_name' => ' ',
-        'last_name' => ' ',
-        'nickname' => ' ',
-        'gender' => ' ',
-        'height' => ' ',
-        'birth_day' => ' '
-    ];
+    $params = $request->getqueryParams();
 
-    return $this->view->render($response, 'updatePerson.latte', $tplVars);
+    if (!empty($params['id_person'])) {
+        $stmt = $this->db->prepare('SELECT * FROM person WHERE id_person = :id_person');
+        $stmt->bindValue(':id_person', $params['id_person']);
+        $stmt->execute();
+        $tplVars['formData'] = $stmt->fetch();
+        if(empty($tplVars['formData'])) {
+            exit('person not found');
+        } else {
+            return $this->view->render($response, 'updatePerson.latte', $tplVars);
+        }
+    }
 })->setname('updatePerson');
+
+$app->post('/person/update', function (Request $request, Response $response, $args) {
+    $id_person = $request->getQueryParam('id_person');
+    $formData = $request->getParsedBody();
+    $tplVars = [];
+    if ( empty($formData['first_name']) || empty($formData['last_name']) || empty($formData['nickname']) ) {
+        $tplVars['message'] = 'Please fill required fields';
+    } else {
+        try {
+            $stmt = $this->db->prepare("UPDATE person SET 
+                                                first_name = :first_name,  
+                                                last_name = :last_name,
+                                                nickname = :nickname,
+                                                birth_day = :birth_day,
+                                                gender = :gender,
+                                                height = :height
+                                        WHERE id_person = :id_person");
+            $stmt->bindValue(':nickname', $formData['nickname']);
+            $stmt->bindValue(':first_name', $formData['first_name']);
+            $stmt->bindValue(':last_name', $formData['last_name']);
+            #$stmt->bindValue(':id_location', empty($formData['id_location']) ? null : $formData['id_location']);
+            $stmt->bindValue(':gender', empty($formData['gender']) ? null : $formData['gender'] );
+            $stmt->bindValue(':birth_day', empty($formData['birth_day']) ? null : $formData['birth_day']);
+            $stmt->bindValue(':height', empty($formData['height']) ? null : $formData['height']);
+            $stmt->bindValue(':id_person', $id_person);
+            $stmt->execute();
+
+            $tplVars['message'] = 'Person successfully updated';
+        } catch (PDOexception $e) {
+            $tplVars['message'] = 'Error occured, sorry jako';
+            $this->logger->error($e->getMessage());
+        }
+    }
+    $tplVars['formData'] = $formData;
+    return $this->view->render($response, 'updatePerson.latte', $tplVars);
+});
 
 /* zpracovani formulare */
 $app->post('/person', function (Request $request, Response $response, $args) {
     /*telo pozadavku*/
     $formData = $request->getParsedBody();
-    $tplVars = [];
+    $tplVars = ['formData' => ''];
 
     if (empty($formData['first_name']) || empty($formData['last_name']) || empty($formData['nickname'])) {
         $tplVars['message'] = 'Please field required fields';
