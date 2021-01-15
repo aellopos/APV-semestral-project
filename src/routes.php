@@ -26,5 +26,19 @@ $app->get('/persons', function (Request $request, Response $response, $args) {
 	$stmt = $this->db->query('SELECT * FROM person ORDER BY first_name'); 
 
 	$tplVars['persons_list'] = $stmt->fetchall(); 
-	$this->view->render($response, 'persons.latte', $tplVars);
+	return $this->view->render($response, 'persons.latte', $tplVars);
 });
+
+/* Vyhledavani */
+$app->get('/search', function (Request $request, Response $response, $args) {
+    $queryParams = $request->getQueryParams();
+    if(!empty($queryParams)) {
+        $stmt = $this->db->prepare('SELECT * FROM person WHERE first_name = :fname OR last_name = :lname');
+        $stmt->bindParam(':fname', $queryParams['q']);
+        $stmt->bindParam(':lname', $queryParams['q']);
+        $stmt->execute();
+        $tplVars['persons_list'] = $stmt->fetchall(); 
+
+        return $this->view->render($response, 'persons.latte', $tplVars);
+    }
+})->setname('search');
