@@ -33,7 +33,7 @@ $app->get('/persons', function (Request $request, Response $response, $args) {
 $app->get('/search', function (Request $request, Response $response, $args) {
     $queryParams = $request->getQueryParams();
     if(!empty($queryParams)) {
-        $stmt = $this->db->prepare('SELECT * FROM person WHERE first_name = :fname OR last_name = :lname');
+        $stmt = $this->db->prepare('SELECT * FROM person WHERE lower(first_name) = lower(:fname) OR lower(last_name) = lower(:lname)');
         $stmt->bindParam(':fname', $queryParams['q']);
         $stmt->bindParam(':lname', $queryParams['q']);
         $stmt->execute();
