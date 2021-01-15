@@ -58,6 +58,20 @@ $app->get('/newPerson', function (Request $request, Response $response, $args) {
     return $this->view->render($response, 'newPerson.latte', $tplVars);
 })->setname('newPerson');
 
+/* update */
+$app->get('/newPerson/update', function (Request $request, Response $response, $args) {
+    $tplVars['formData'] = [
+        'first_name' => ' ',
+        'last_name' => ' ',
+        'nickname' => ' ',
+        'gender' => ' ',
+        'height' => ' ',
+        'birth_day' => ' '
+    ];
+
+    return $this->view->render($response, 'updatePerson.latte', $tplVars);
+})->setname('updatePerson');
+
 /* zpracovani formulare */
 $app->post('/newPerson', function (Request $request, Response $response, $args) {
     /*telo pozadavku*/
@@ -83,6 +97,9 @@ $app->post('/newPerson', function (Request $request, Response $response, $args) 
             $tplVars['message'] = 'Error occured, working on it';
             /*log erroru*/
             $this->logger->error($e->getMessage());
+
+            /*zachovani hodnot formu*/
+            $tplVars['formData'] = $formData;
         }
     }
 
