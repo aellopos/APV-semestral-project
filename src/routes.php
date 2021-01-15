@@ -25,6 +25,6 @@ $app->post('/test', function (Request $request, Response $response, $args) {
 $app->get('/persons', function (Request $request, Response $response, $args) {
 	$stmt = $this->db->query('SELECT * FROM person ORDER BY first_name'); 
 
-	$osoby = $stmt->fetchall(); 
-	echo var_dump($osoby);
+	$tplVars['persons_list'] = $stmt->fetchall(); 
+	$this->view->render($response, 'persons.latte', $tplVars);
 });
