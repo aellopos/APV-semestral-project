@@ -46,7 +46,16 @@ $app->get('/search', function (Request $request, Response $response, $args) {
 
 /* render formulare */
 $app->get('/newPerson', function (Request $request, Response $response, $args) {
-    return $this->view->render($response, 'newPerson.latte');
+    $tplVars['formData'] = [
+        'first_name' => '',
+        'last_name' => '',
+        'nickname' => '',
+        'gender' => '',
+        'height' => '',
+        'birth_day' => ''
+    ];
+
+    return $this->view->render($response, 'newPerson.latte', $tplVars);
 })->setname('newPerson');
 
 /* zpracovani formulare */
