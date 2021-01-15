@@ -45,7 +45,7 @@ $app->get('/search', function (Request $request, Response $response, $args) {
 })->setname('search');
 
 /* render formulare */
-$app->get('/newPerson', function (Request $request, Response $response, $args) {
+$app->get('/person', function (Request $request, Response $response, $args) {
     $tplVars['formData'] = [
         'first_name' => '',
         'last_name' => '',
@@ -59,7 +59,7 @@ $app->get('/newPerson', function (Request $request, Response $response, $args) {
 })->setname('newPerson');
 
 /* update */
-$app->get('/newPerson/update', function (Request $request, Response $response, $args) {
+$app->get('/person/update', function (Request $request, Response $response, $args) {
     $tplVars['formData'] = [
         'first_name' => ' ',
         'last_name' => ' ',
@@ -73,7 +73,7 @@ $app->get('/newPerson/update', function (Request $request, Response $response, $
 })->setname('updatePerson');
 
 /* zpracovani formulare */
-$app->post('/newPerson', function (Request $request, Response $response, $args) {
+$app->post('/person', function (Request $request, Response $response, $args) {
     /*telo pozadavku*/
     $formData = $request->getParsedBody();
     $tplVars = [];
