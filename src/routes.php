@@ -3,6 +3,8 @@
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 
+include 'location.php';
+
 $app->get('/', function (Request $request, Response $response, $args) {
     // Render index view
     return $this->view->render($response, 'index.latte');
@@ -52,7 +54,11 @@ $app->get('/person', function (Request $request, Response $response, $args) {
         'nickname' => '',
         'gender' => '',
         'height' => '',
-        'birth_day' => ''
+        'birth_day' => '',
+        'street_name' => '',
+        'street_number' => '',
+        'zip' => '',
+        'city' => ''
     ];
 
     return $this->view->render($response, 'newPerson.latte', $tplVars);
@@ -63,7 +69,7 @@ $app->get('/person/update', function (Request $request, Response $response, $arg
     $params = $request->getqueryParams();
 
     if (!empty($params['id_person'])) {
-        $stmt = $this->db->prepare('SELECT * FROM person WHERE id_person = :id_person');
+        $stmt = $this->db->prepare('SELECT * FROM person LEFT JOIN location USING (id_location) WHERE id_person = :id_person');
         $stmt->bindValue(':id_person', $params['id_person']);
         $stmt->execute();
         $tplVars['formData'] = $stmt->fetch();
@@ -83,18 +89,37 @@ $app->post('/person/update', function (Request $request, Response $response, $ar
         $tplVars['message'] = 'Please fill required fields';
     } else {
         try {
+            if(!empty($formData['street_name']) || !empty($formData['street_number']) || !empty($formData['zip']) || !empty($formData['zip'])) {
+
+                $stmt = $this->db->prepare("SELECT id_location FROM person WHERE id_person = :id_person");
+                $stmt->bindValue(':id_person', $id_person);
+                $stmt->execute();
+
+                $id_location = $stmt->fetch()['id_location'];
+
+                if($id_location) {
+                    #ma adresu
+                    editLocation($this, $id_location, $formData);
+                } else {
+                    #nema adresu
+                    $id_location = newLocation($this, $formData);
+                }
+            }
+
+
             $stmt = $this->db->prepare("UPDATE person SET 
                                                 first_name = :first_name,  
                                                 last_name = :last_name,
                                                 nickname = :nickname,
                                                 birth_day = :birth_day,
                                                 gender = :gender,
-                                                height = :height
+                                                height = :height,
+                                                id_location = :id_location
                                         WHERE id_person = :id_person");
             $stmt->bindValue(':nickname', $formData['nickname']);
             $stmt->bindValue(':first_name', $formData['first_name']);
             $stmt->bindValue(':last_name', $formData['last_name']);
-            #$stmt->bindValue(':id_location', empty($formData['id_location']) ? null : $formData['id_location']);
+            $stmt->bindValue(':id_location', $id_location ? $id_location : null);
             $stmt->bindValue(':gender', empty($formData['gender']) ? null : $formData['gender'] );
             $stmt->bindValue(':birth_day', empty($formData['birth_day']) ? null : $formData['birth_day']);
             $stmt->bindValue(':height', empty($formData['height']) ? null : $formData['height']);
@@ -121,12 +146,18 @@ $app->post('/person', function (Request $request, Response $response, $args) {
         $tplVars['message'] = 'Please field required fields';
     } else {
         try {
+
+            if(!empty($formData['street_name']) || !empty($formData['street_number']) || !empty($formData['zip']) || !empty($formData['zip'])) {
+                #nema adresu
+                $id_location = newLocation($this, $formData);
+            }
+
             $stmt = $this->db->prepare("INSERT INTO person(nickname, first_name, last_name, id_location, birth_day, height, gender) VALUES (:nickname, :first_name, :last_name,:id_location, :birth_day, :height, :gender)");
 
             $stmt->bindValue(':nickname', $formData['nickname']);
             $stmt->bindValue(':first_name', $formData['first_name']);
             $stmt->bindValue(':last_name', $formData['last_name']);
-            $stmt->bindValue(':id_location', empty($formData['id_location']) ? null : $formData['id_location']);
+            $stmt->bindValue(':id_location', $id_location ? $id_location : null);
             $stmt->bindValue(':birth_day', empty($formData['birth_day']) ? null : $formData['birth_day']);
             $stmt->bindValue(':height', empty($formData['height']) ? null : $formData['height']);
             $stmt->bindValue(':gender', empty($formData['gender']) ? null : $formData['gender']);

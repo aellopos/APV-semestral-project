@@ -1,5 +1,3 @@
-
-    <div class="container">
         <!-- Sem vypiseme pripadnu hlasku -->
         {if isset($message)}
             <p>{$message}</p>
@@ -10,44 +8,69 @@
                 <!-- First name -->
                 <div class="col-sm-3 form-group">    
                     <label for="first_name">First name</label>
-                    <input class="form-control" type="text" name="first_name" placeholder="First name" value="{$formData['first_name']}" required>
+                    <input class="form-control" type="text" name="first_name" placeholder="First name" required value="{$formData['first_name']}">
                 </div>
                 <!-- Last name -->
                 <div class="col-sm-3 form-group">
                     <label for="last_name">Last name</label> 
-                    <input class="form-control" type="text" name="last_name" placeholder="Last name" value="{$formData['last_name']}" required>
+                    <input class="form-control" type="text" name="last_name" placeholder="Last name" required value="{$formData['last_name']}">
                 </div>
                 <!-- Nickname -->
                 <div class="col-sm-3 form-group">
                     <label for="nickname">Nickname</label> 
-                    <input class="form-control" type="text" name="nickname" placeholder="Nickname" value="{$formData['nickname']}" required>
+                    <input class="form-control" type="text" name="nickname" placeholder="Nickname" required value="{$formData['nickname']}">
                 </div>
             </div>
 
             <div class="form-row">
                 <!-- Gender -->
-                <div class="col-sm-3">
+                <div class="col-sm-3 form-group">
                     <label for="height">Gender</label>    
-                    <select class="form-control" type="text" name="gender"  required>
+                    <select class="form-control" type="text" name="gender"required>
                         <option value="male" {if $formData['gender'] == 'male'}selected{/if}>Male</option>
                         <option value="female" {if $formData['gender'] == 'female'}selected{/if}>Female</option>
-                        <option value="other" {if $formData['gender'] == 'other'}selected{/if}>Other</option>
                     </select>
                 </div>
                 <!-- Height -->
-                <div class="col-sm-3">
+                <div class="col-sm-3 form-group">
                     <label for="height">Height</label>
                     <input class="form-control" min=10 type="number" name="height" placeholder="Height" value="{$formData['height']}">
                 </div>
                 <!-- Birth day -->
-                <div class="col-sm-3"> 
+                <div class="col-sm-3 form-group"> 
                     <label for="birth_day">Birthday</label>
                     <input class="form-control" type="date" name="birth_day" placeholder="Date of birth" value="{$formData['birth_day']}">
                 </div>
-            </div>       
+            </div>      
+
+            <div class="form-row">
+            	<!-- Street  name -->
+            	<div class="col-sm-3 form-group"> 
+            		<label for="city">Street name</label>
+                    <input class="form-control" type="text" name="street_name" placeholder="Street name" value="{$formData['street_name']}">
+            	</div>
+            	<!-- Street number -->
+            	<div class="col-sm-2 form-group"> 
+            		<label for="city">Street number</label>
+                    <input class="form-control" type="number" name="street_number" placeholder="Street number" value="{$formData['street_number']}">
+            	</div>
+
+            	<!-- City -->
+            	<div class="col-sm-2 form-group"> 
+            		<label for="zip">City</label>
+                    <input class="form-control" type="text" name="city" placeholder="City" value="{$formData['city']}">
+            	</div>
+
+            	<!-- ZIP -->
+            	<div class="col-sm-2 form-group"> 
+            		<label for="zip">ZIP</label>
+                    <input class="form-control" type="text" name="zip" placeholder="ZIP" value="{$formData['zip']}">
+            	</div>
+            </div> 
+
             <br>
             <button type="submit" class="btn btn-success">
-                <span class="fa fa-plus"></span> Add new person
+                <span class="fa {if $type == 'create'} fa-plus{else}fa-edit{/if}"></span> {$buttonTitle}
             </button>
         </form>
     </div>   
