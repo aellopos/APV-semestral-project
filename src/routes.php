@@ -29,7 +29,7 @@ $app->get('/persons', function (Request $request, Response $response, $args) {
 
 	$tplVars['persons_list'] = $stmt->fetchall(); 
 	return $this->view->render($response, 'persons.latte', $tplVars);
-});
+})->setname('persons');
 
 /* Vyhledavani */
 $app->get('/search', function (Request $request, Response $response, $args) {
@@ -175,3 +175,24 @@ $app->post('/person', function (Request $request, Response $response, $args) {
 
     return $this->view->render($response, 'newPerson.latte', $tplVars);
 });
+
+
+/* mazani osob */
+
+$app->post('/persons/delete', function (Request $request, Response $response, $args ) {
+    $id_person = $request->getQueryParam('id_person');
+    if (!empty($id_person)) {
+        try {
+            $stmt = $this->db->prepare('DELETE FROM person WHERE id_person = :id_person');
+            $stmt->bindValue(':id_person', $id_person);
+            $stmt->execute();
+        } catch (PDOException $e) {
+            $this->logger->error($e->getMessage());
+            exit('error occured');
+        }
+    } else {
+        exit('id_person is missing');
+    }
+
+    return $response->withHeader('Location', $this->router->pathFor('persons'));
+})->setname('person_delete');

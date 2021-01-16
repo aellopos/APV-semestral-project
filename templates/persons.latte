@@ -24,7 +24,7 @@ Persons list
                 <th>Last name</th>
                 <th>Height</th>
                 <th>Gender</th>
-                <th>Edit</th>
+                <th colspan="2" class="text-center">Action</th>
             </tr>
 
             {foreach $persons_list as $p}
@@ -33,15 +33,29 @@ Persons list
                     <td>{$p['last_name']}</td>
                     <td>{$p['height']}</td>
                     <td>{$p['gender']}</td>
-                    <td>
+                    <td class="text-center">
                         <a href="{link updatePerson}?id_person={$p['id_person']}">
                             <button class="btn-sm btn-primary">
-                                <span class="fa fa-edit"></span>
+                                <span class="fa fa-edit"></span> Edit
                             </button>
                         </a>
+                    </td>
+                    <td class="text-center">
+                        <form method="post" onsubmit="return confirmDelete({$p['first_name']} + ' ' + {$p['last_name']})" action="{link person_delete}?id_person={$p['id_person']}">
+                            <button class="btn-sm btn-danger">
+                                <span class="fa fa-trash"></span> Delete
+                            </button>
+                        </form>
                     </td>
                 </tr>
             {/foreach}
         </table>
     </div>
+
+
+    <script type="text/javascript">
+        function confirmDelete(name) {
+            return confirm("Do you want to delete " + name + "?");
+        }
+    </script>
 {/block}

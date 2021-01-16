@@ -17,8 +17,6 @@ function editLocation($app, $id_location, $formData) {
 	return True;
 }
 
-
-
 function newLocation($app, $formData) {
 	$stmt = $app->db->prepare('INSERT INTO location (street_name, street_number, zip, city) 
 								VALUES (:street_name, :street_number, :zip, :city) RETURNING id_location');
