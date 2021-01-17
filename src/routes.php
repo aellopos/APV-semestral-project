@@ -146,6 +146,7 @@ $app->post('/person', function (Request $request, Response $response, $args) {
         $tplVars['message'] = 'Please field required fields';
     } else {
         try {
+            $this->db->beginTransaction();
 
             if(!empty($formData['street_name']) || !empty($formData['street_number']) || !empty($formData['zip']) || !empty($formData['zip'])) {
                 #nema adresu
@@ -163,6 +164,7 @@ $app->post('/person', function (Request $request, Response $response, $args) {
             $stmt->bindValue(':gender', empty($formData['gender']) ? null : $formData['gender']);
             $stmt->execute();
             $tplVars['message'] = 'Person successfully added';
+            $this->db->commit();
         } catch (PDOException $e) {
             $tplVars['message'] = 'Error occured, working on it';
             /*log erroru*/
@@ -170,6 +172,7 @@ $app->post('/person', function (Request $request, Response $response, $args) {
 
             /*zachovani hodnot formu*/
             $tplVars['formData'] = $formData;
+            $this->db->rollback();
         }
     }
 
@@ -183,6 +186,9 @@ $app->post('/persons/delete', function (Request $request, Response $response, $a
     $id_person = $request->getQueryParam('id_person');
     if (!empty($id_person)) {
         try {
+            $stmt = $this->db->prepare('DELETE FROM contact WHERE id_person = :id_person');
+            $stmt = $this->db->prepare('DELETE FROM person_meeting WHERE id_person = :id_person');
+            $stmt = $this->db->prepare('DELETE FROM relation WHERE id_person = :id_person');
             $stmt = $this->db->prepare('DELETE FROM person WHERE id_person = :id_person');
             $stmt->bindValue(':id_person', $id_person);
             $stmt->execute();
@@ -196,3 +202,7 @@ $app->post('/persons/delete', function (Request $request, Response $response, $a
 
     return $response->withHeader('Location', $this->router->pathFor('persons'));
 })->setname('person_delete');
+
+
+
+# OTHER
