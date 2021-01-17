@@ -1,0 +1,11 @@
+{extends layout.latte}
+
+{block title}Update contact/block}
+
+{block body}
+    <div class="container">
+        <h1>Update contact</h1>
+
+        {include contactForm.latte, buttonTitle => 'Update', type => 'update'}
+    </div>
+{/block}

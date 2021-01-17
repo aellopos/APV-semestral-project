@@ -24,6 +24,7 @@ Persons list
                 <th>Last name</th>
                 <th>Height</th>
                 <th>Gender</th>
+                <th>Contact</th>
                 <th colspan="2" class="text-center">Action</th>
             </tr>
 
@@ -33,6 +34,13 @@ Persons list
                     <td>{$p['last_name']}</td>
                     <td>{$p['height']}</td>
                     <td>{$p['gender']}</td>
+                    <td>
+                        <a href="{link viewContact}?id_person={$p['id_person']}">
+                            <button class="btn-sm btn-primary">
+                                <span class="fa fa-id-card"></span>
+                            </button>
+                        </a>
+                    </td>
                     <td class="text-center">
                         <a href="{link updatePerson}?id_person={$p['id_person']}">
                             <button class="btn-sm btn-primary">

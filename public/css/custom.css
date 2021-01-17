@@ -19,3 +19,7 @@ nav li {
   margin: 0 10px;
   display: inline-block;
 }
+
+#id_person_form {
+  visibility: hidden;
+}

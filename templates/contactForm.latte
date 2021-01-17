@@ -1,0 +1,36 @@
+
+        {if isset($message)}
+            <p>{$message}</p>
+        {/if}
+
+        <form method="post">
+            <div class="form-row">
+                
+                <div class="col-sm-3 form-group">    
+                    <label for="first_name">Contact name</label>
+                    <input autofocus class="form-control" type="text" name="contact_name" placeholder="Contact name" required value="{$contactData['contact']}">
+                </div>
+                
+                <div class="col-sm-3 form-group">
+                    <label for="height">Contact type</label>    
+                    <select class="form-control" type="text" name="contact_type" required>
+                        <option value="2" {if $contactData['name'] == 'skype'}selected{/if}>skype</option>
+                        <option value="5" {if $contactData['name'] == 'jabber'}selected{/if}>jabber</option>
+                        <option value="6" {if $contactData['name'] == 'web'}selected{/if}>web</option>
+                        <option value="1" {if $contactData['name'] == 'facebook'}selected{/if}>facebook</option>
+                        <option value="4" {if $contactData['name'] == 'email'}selected{/if}>email</option>
+                        <option value="3" {if $contactData['name'] == 'tel'}selected{/if}>tel</option>
+                    </select>
+                </div>
+
+                 <div class="col-sm-3 form-group">    
+                    <input style="visibility: hidden;" class="form-control" readonly type="text" name="id_person" required value="{$contactData['id_person']}">
+                </div>
+            </div>
+
+            <br>
+            <button type="submit" class="btn btn-success">
+                <span class="fa {if $type == 'create'} fa-plus{else}fa-edit{/if}"></span> {$buttonTitle}
+            </button>
+        </form>
+    </div>   

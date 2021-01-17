@@ -1,0 +1,11 @@
+{extends layout.latte}
+
+{block title}New contact{/block}
+
+{block body}
+    <div class="container">
+        <h1>New Contact</h1>
+    
+        {include contactForm.latte, buttonTitle => 'Create', type => 'create'}
+    </div>
+{/block}
