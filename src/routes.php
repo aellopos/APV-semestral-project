@@ -458,3 +458,91 @@ $app->post('/relation/delete', function (Request $request, Response $response, $
 
     return $response->withHeader('Location', $this->router->pathFor('persons'));
 })->setname('relation_delete');
+
+/* MEETINGS */
+
+/* Seznam vsech schuzek */
+
+$app->get('/meetings', function (Request $request, Response $response, $args) {
+    $stmt = $this->db->query('SELECT * FROM meeting LEFT JOIN location ON meeting.id_location = location.id_location');
+
+    $tplVars['meeting_list'] = $stmt->fetchall();
+    return $this->view->render($response, 'meetings.latte', $tplVars);
+})->setname('meetings');
+
+/* Ukaz schuzku */
+
+$app->get('/meetings/update', function (Request $request, Response $response, $args) {
+    $params = $request->getqueryParams();
+
+    if (!empty($params['id_meeting'])) {
+        $stmt = $this->db->prepare('SELECT * FROM meeting LEFT JOIN person_meeting USING (id_meeting) LEFT JOIN person ON person_meeting.id_person = person.id_person
+        LEFT JOIN location ON meeting.id_location = location.id_location WHERE meeting.id_meeting = :id_meeting');
+        $stmt->bindValue(':id_meeting', $params['id_meeting']);
+        $stmt->execute();
+        $tplVars['meetingData'] = $stmt->fetch();
+
+        if (empty($tplVars['meetingData'])) {
+            exit('meeting not found');
+        } else {
+            return $this->view->render($response, 'showMeeting.latte', $tplVars);
+        }
+    }
+})->setname('showMeeting');
+
+/* Pridej ucastnika */
+
+$app->get('/meeting/new', function (Request $request, Response $response, $args) {
+    $id_meeting = $request->getQueryParam('id_meeting');
+    $stmt = $this->db->prepare('SELECT id_person, first_name, last_name FROM person');
+    $stmt->execute();
+    $tplVars['personData'] = $stmt->fetchall();
+
+    $tplVars['meeting'] = ["id_meeting" => $id_meeting];
+
+    return $this->view->render($response, 'attendeeForm.latte', $tplVars);
+})->setname('newAttendee');
+
+$app->post('/meeting/new', function (Request $request, Response $response, $args) {
+    $formData = $request->getParsedBody();
+    $tplVars = ['formData' => ''];
+
+    try {
+        $stmt = $this->db->prepare("INSERT INTO person_meeting(id_person, id_meeting) VALUES (:id_person, :id_meeting)");
+        $stmt->bindValue(':id_person', $formData['person_name']);
+        $stmt->bindValue(':id_meeting', $formData['id_meeting']);
+        $stmt->execute();
+        $tplVars['message'] = 'Contact successfully added';
+    } catch (PDOException $e) {
+        $tplVars['message'] = 'Error occured, working on it';
+        /*log erroru*/
+        $this->logger->error($e->getMessage());
+
+        /*zachovani hodnot formu*/
+        $tplVars['formData'] = $formData;
+    }
+
+
+    return $this->view->render($response, 'attendeeForm.latte', $tplVars);
+});
+
+
+/* mazani schuzek */
+
+$app->post('/meetings/delete', function (Request $request, Response $response, $args) {
+    $id_meeting = $request->getQueryParam('id_meeting');
+    if (!empty($id_meeting)) {
+        try {
+            $stmt = $this->db->prepare('DELETE FROM meeting WHERE id_meeting = :id_meeting');
+            $stmt->bindValue(':id_meeting', $id_meeting);
+            $stmt->execute();
+        } catch (PDOException $e) {
+            $this->logger->error($e->getMessage());
+            exit('error occured');
+        }
+    } else {
+        exit('id_meeting is missing');
+    }
+
+    return $response->withHeader('Location', $this->router->pathFor('meetings'));
+})->setname('meeting_delete');

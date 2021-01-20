@@ -1,0 +1,21 @@
+{extends layout.latte}
+
+{block title}Show meeting{/block}
+
+{block body}
+    <div class="container">
+        <h1>Show meeting</h1>
+
+        <p>Start: {$meetingData['start']}</p>
+        <p>Description: {$meetingData['description']}</p>
+        <p>Location: {$meetingData['street_name']} {$meetingData['street_number']} {$meetingData['city']}</p>
+
+        <h2>Attendees</h2>
+        <p>{$meetingData['first_name']} {$meetingData['last_name']}</p>
+        <!--<ol>
+        {foreach $meetingData as $a}
+            <li>{$a['first_name']} {$a['last_name']}</li>
+        {/foreach}
+        </ol>-->
+    </div>
+{/block}

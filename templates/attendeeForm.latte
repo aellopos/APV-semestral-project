@@ -1,0 +1,34 @@
+{extends layout.latte}
+
+{block title}
+Meeting list
+{/block}
+
+{block body}
+        {if isset($message)}
+            <p>{$message}</p>
+        {/if}
+
+        <form method="post">
+            <div class="form-row">
+                
+                <div class="col-sm-3 form-group">    
+                    <label for="first_name">Person name</label>
+                    <select class="form-control" type="text" name="person_name" required>
+                        {foreach $personData as $p}
+                            <option value="{$p['id_person']}">{$p['first_name']} {$p['last_name']}</option>
+                        {/foreach}
+                    </select>
+                </div>
+
+                 <div class="col-sm-3 form-group">    
+                    <input style="visibility: hidden;" class="form-control" readonly type="text" name="id_meeting" required value="{$meeting['id_meeting']}">
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-success">
+                    <span class="fa fa-plus fa-plus"></span> Add
+            </button>
+        </form>
+    </div>   
+{/block}
