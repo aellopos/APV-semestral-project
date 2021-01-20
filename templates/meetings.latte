@@ -8,21 +8,22 @@ Meeting list
     <div class="container md-5">
 
         <h1>Meetings</h1>
+        <br>
 
         <table class="table table-striped table-hover">
             <tr>
-                <th>Date</th>
-                <th>Place</th>
-                <th>Description</th>
+                <th class="text-center">Date</th>
+                <th class="text-center">Place</th>
+                <th class="text-center">Description</th>
                 <th class="text-center">Attendees</th>
                 <th colspan="2" class="text-center">Action</th>
             </tr>
 
             {foreach $meeting_list as $m}
                 <tr>
-                    <td>{$m['start']}</td>
-                    <td>{$m['street_name']} {$m['street_number']} {$m['city']}</td>
-                    <td>{$m['description']}</td>
+                    <td class="text-center">{$m['start']}</td>
+                    <td class="text-center">{$m['street_name']} {$m['street_number']} {$m['city']}</td>
+                    <td class="text-center">{$m['description']}</td>
                     <td class="text-center"> 
                         <a href="{link newAttendee}?id_meeting={$m['id_meeting']}">
                             <button class="btn-sm btn-success">

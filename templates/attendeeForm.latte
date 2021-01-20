@@ -1,14 +1,16 @@
 {extends layout.latte}
 
 {block title}
-Meeting list
+Add attendee
 {/block}
 
 {block body}
+    <div class="container">
+        <h1>Add to meeting</h1>
+        <br>
         {if isset($message)}
             <p>{$message}</p>
         {/if}
-
         <form method="post">
             <div class="form-row">
                 
@@ -30,5 +32,5 @@ Meeting list
                     <span class="fa fa-plus fa-plus"></span> Add
             </button>
         </form>
-    </div>   
+    </div>  
 {/block}

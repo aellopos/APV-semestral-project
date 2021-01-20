@@ -14,7 +14,12 @@
     {ifset meta}{include meta}{/ifset}
 </head>
 <body>
-{include menu}
-{include body}
+    <header class="container md-12">
+        {include menu}
+    </header>
+    <div class="container">
+        {include body}
+
+    </div>
 </body>
 </html>
