@@ -25,6 +25,7 @@ Persons list
                 <th>Height</th>
                 <th>Gender</th>
                 <th>Contact</th>
+                <th>Relationship</th>
                 <th colspan="2" class="text-center">Action</th>
             </tr>
 
@@ -38,6 +39,13 @@ Persons list
                         <a href="{link viewContact}?id_person={$p['id_person']}">
                             <button class="btn-sm btn-primary">
                                 <span class="fa fa-id-card"></span>
+                            </button>
+                        </a>
+                    </td>
+                    <td>
+                        <a href="{link viewRelation}?id_person={$p['id_person']}">
+                            <button class="btn-sm btn-primary">
+                                <span class="fa fa-user-friends"></span>
                             </button>
                         </a>
                     </td>

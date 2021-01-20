@@ -1,0 +1,46 @@
+
+        {if isset($message)}
+            <p>{$message}</p>
+        {/if}
+
+        <form method="post">
+            <div class="form-row">
+                
+                <div class="col-sm-3 form-group">    
+                    <label for="first_name">Person name</label>
+                    <select class="form-control" type="text" name="person_name" required>
+                    {if $type == 'update'}
+                        <option selected disabled value="{$relationData['id_person']}">{$relationData['first_name']} {$relationData['last_name']}</option>
+                    {else}
+                        {foreach $relationData as $p}
+                            <option value="{$p['id_person']}">{$p['first_name']} {$p['last_name']}</option>
+                        {/foreach}
+                    {/if}
+                    </select>
+                </div>
+                
+                <div class="col-sm-3 form-group">
+                    <label for="height">Relation type</label>    
+                    <select class="form-control" type="text" name="relation_type" required>
+                        <option value="1" {if isset($relationData['name']) && $relationData['name'] == 'friend'}selected{/if}>friend</option>
+                        <option value="2" {if isset($relationData['name']) && $relationData['name'] == 'enemy'}selected{/if}>enemy</option>
+                        <option value="3" {if isset($relationData['name']) && $relationData['name'] == 'partner'}selected{/if}>partner</option>
+                        <option value="4" {if isset($relationData['name']) && $relationData['name'] == 'colleague'}selected{/if}>colleague</option>
+                        <option value="5" {if isset($relationData['name']) && $relationData['name'] == 'acquaintance'}selected{/if}>acquaintance</option>
+                        <option value="6" {if isset($relationData['name']) && $relationData['name'] == 'lover'}selected{/if}>lover</option>
+                        <option value="7" {if isset($relationData['name']) && $relationData['name'] == 'family'}selected{/if}>family</option>
+                        <option value="8" {if isset($relationData['name']) && $relationData['name'] == 'spouse'}selected{/if}>spouse</option>
+                    </select>
+                </div>
+
+                 <div class="col-sm-3 form-group">    
+                    <input style="visibility: hidden;" class="form-control" readonly type="text" name="id_person" required value="{$person['id_person']}">
+                </div>
+            </div>
+
+            <br>
+            <button type="submit" class="btn btn-success">
+                <span class="fa {if $type == 'create'} fa-plus{else}fa-edit{/if}"></span> {$buttonTitle}
+            </button>
+        </form>
+    </div>   

@@ -213,7 +213,7 @@ $app->get('/contact', function (Request $request, Response $response, $args) {
     $id_person = $request->getQueryParam('id_person');
 
     if (!empty($id_person)) {
-        $stmt = $this->db->prepare('SELECT * FROM person INNER JOIN contact USING (id_person) INNER JOIN contact_type USING (id_contact_type) WHERE id_person = :id_person');
+        $stmt = $this->db->prepare('SELECT * FROM person LEFT JOIN contact USING (id_person) LEFT JOIN contact_type USING (id_contact_type) WHERE id_person = :id_person');
         $stmt->bindValue(':id_person', $id_person);
         $stmt->execute();
         $tplVars['contactData'] = $stmt->fetchall();
@@ -228,7 +228,6 @@ $app->get('/contact', function (Request $request, Response $response, $args) {
 
 /* Pridat */
 
-/* render formulare */
 $app->get('/contact/new', function (Request $request, Response $response, $args) {
     $id_person = $request->getQueryParam('id_person');
 
@@ -241,7 +240,6 @@ $app->get('/contact/new', function (Request $request, Response $response, $args)
     return $this->view->render($response, 'newContact.latte', $tplVars);
 })->setname('newContact');
 
-/* zpracovani */
 $app->post('/contact/new', function (Request $request, Response $response, $args) {
     $formData = $request->getParsedBody();
     $tplVars = ['formData' => ''];
@@ -277,7 +275,7 @@ $app->get('/contact/update', function (Request $request, Response $response, $ar
     $params = $request->getqueryParams();
 
     if (!empty($params['id_contact'])) {
-        $stmt = $this->db->prepare('SELECT * FROM contact INNER JOIN contact_type USING (id_contact_type) WHERE id_contact = :id_contact');
+        $stmt = $this->db->prepare('SELECT * FROM contact LEFT JOIN contact_type USING (id_contact_type) WHERE id_contact = :id_contact');
         $stmt->bindValue(':id_contact', $params['id_contact']);
         $stmt->execute();
         $tplVars['contactData'] = $stmt->fetch();
@@ -335,3 +333,128 @@ $app->post('/contact/delete', function (Request $request, Response $response, $a
 
     return $response->withHeader('Location', $this->router->pathFor('persons'));
 })->setname('contact_delete');
+
+
+/* RELATIONSHIP */
+
+/* Zobrazit */
+
+$app->get('/relation', function (Request $request, Response $response, $args) {
+    $id_person = $request->getQueryParam('id_person');
+
+    if (!empty($id_person)) {
+        $stmt = $this->db->prepare('SELECT * FROM relation LEFT JOIN relation_type USING (id_relation_type) 
+        LEFT JOIN person ON relation.id_person2 = person.id_person WHERE relation.id_person1 = :id_person');
+        $stmt->bindValue(':id_person', $id_person);
+        $stmt->execute();
+        $tplVars['relationData'] = $stmt->fetchall();
+        $tplVars['person'] = ["id_person" => $id_person];
+        if (empty($tplVars['relationData'])) {
+            exit('This person does not have any relationships');
+        } else {
+            return $this->view->render($response, 'profileRelation.latte', $tplVars);
+        }
+    }
+})->setname('viewRelation');
+
+/* Pridat */
+
+$app->get('/relation/new', function (Request $request, Response $response, $args) {
+    $id_person = $request->getQueryParam('id_person');
+    $stmt = $this->db->prepare('SELECT id_person, first_name, last_name FROM person');
+    $stmt->execute();
+    $tplVars['relationData'] = $stmt->fetchall();
+
+    $tplVars['person'] = ["id_person" => $id_person];
+
+    return $this->view->render($response, 'newRelation.latte', $tplVars);
+})->setname('newRelation');
+
+$app->post('/relation/new', function (Request $request, Response $response, $args) {
+    $formData = $request->getParsedBody();
+    $tplVars = ['formData' => ''];
+
+    if (empty($formData['person_name'])) {
+        $tplVars['message'] = 'Please field required fields';
+    } else {
+        try {
+            $stmt = $this->db->prepare("INSERT INTO relation(id_person1, id_person2, description, id_relation_type) VALUES (:id_person1, :id_person2, :description, :id_relation_type)");
+            $stmt->bindValue(':id_person1', $formData['id_person']);
+            $stmt->bindValue(':id_person2', $formData['person_name']);
+            $stmt->bindValue(':id_relation_type', $formData['relation_type']);
+            $stmt->bindValue(':description', '');
+            $stmt->execute();
+            $tplVars['message'] = 'Contact successfully added';
+        } catch (PDOException $e) {
+            $tplVars['message'] = 'Error occured, working on it';
+            /*log erroru*/
+            $this->logger->error($e->getMessage());
+
+            /*zachovani hodnot formu*/
+            $tplVars['formData'] = $formData;
+        }
+    }
+
+    return $this->view->render($response, 'newRelation.latte', $tplVars);
+});
+
+/* Upravit */
+
+$app->get('/relation/update', function (Request $request, Response $response, $args) {
+    $params = $request->getqueryParams();
+
+    if (!empty($params['id_relation'])) {
+        $stmt = $this->db->prepare('SELECT * FROM relation LEFT JOIN relation_type USING (id_relation_type) LEFT JOIN person ON relation.id_person2 = person.id_person WHERE id_relation = :id_relation');
+        $stmt->bindValue(':id_relation', $params['id_relation']);
+        $stmt->execute();
+        $tplVars['relationData'] = $stmt->fetch();
+        if (empty($tplVars['relationData'])) {
+            exit('relation not found');
+        } else {
+            return $this->view->render($response, 'updateRelation.latte', $tplVars);
+        }
+    }
+})->setname('updateRelation');
+
+$app->post('/relation/update', function (Request $request, Response $response, $args) {
+    $id_relation = $request->getQueryParam('id_relation');
+    $formData = $request->getParsedBody();
+    $tplVars = [];
+
+    try {
+        $stmt = $this->db->prepare("UPDATE relation SET  
+                                                id_relation_type = :id_relation_type 
+                                        WHERE id_relation = :id_relation");
+        $stmt->bindValue(':id_relation_type', $formData['relation_type']);
+        $stmt->bindValue(':id_relation', $id_relation);
+        $stmt->execute();
+
+        $tplVars['message'] = 'Relation successfully updated';
+    } catch (PDOexception $e) {
+        $tplVars['message'] = 'Error occured';
+        $this->logger->error($e->getMessage());
+    }
+
+    $tplVars['relationData'] = $formData;
+    return $this->view->render($response, 'updateRelation.latte', $tplVars);
+});
+
+/* Smazat */
+
+$app->post('/relation/delete', function (Request $request, Response $response, $args) {
+    $id_relation = $request->getQueryParam('id_relation');
+    if (!empty($id_relation)) {
+        try {
+            $stmt = $this->db->prepare('DELETE FROM relation WHERE id_relation = :id_relation');
+            $stmt->bindValue(':id_relation', $id_relation);
+            $stmt->execute();
+        } catch (PDOException $e) {
+            $this->logger->error($e->getMessage());
+            exit('error occured');
+        }
+    } else {
+        exit('id_relation is missing');
+    }
+
+    return $response->withHeader('Location', $this->router->pathFor('persons'));
+})->setname('relation_delete');

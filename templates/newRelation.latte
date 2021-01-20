@@ -1,0 +1,11 @@
+{extends layout.latte}
+
+{block title}New relationship{/block}
+
+{block body}
+    <div class="container">
+        <h1>New relationship</h1>
+    
+        {include relationForm.latte, buttonTitle => 'Create new relation', type => 'create'}
+    </div>
+{/block}
