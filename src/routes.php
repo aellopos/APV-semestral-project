@@ -382,7 +382,7 @@ $app->post('/relation/new', function (Request $request, Response $response, $arg
             $stmt->bindValue(':id_person1', $formData['id_person']);
             $stmt->bindValue(':id_person2', $formData['person_name']);
             $stmt->bindValue(':id_relation_type', $formData['relation_type']);
-            $stmt->bindValue(':description', '');
+            $stmt->bindValue(':description', $formData['description']);
             $stmt->execute();
             $tplVars['message'] = 'Contact successfully added';
         } catch (PDOException $e) {
@@ -423,9 +423,11 @@ $app->post('/relation/update', function (Request $request, Response $response, $
 
     try {
         $stmt = $this->db->prepare("UPDATE relation SET  
-                                                id_relation_type = :id_relation_type 
+                                                id_relation_type = :id_relation_type,
+                                                description = :description
                                         WHERE id_relation = :id_relation");
         $stmt->bindValue(':id_relation_type', $formData['relation_type']);
+        $stmt->bindValue(':description', $formData['description']);
         $stmt->bindValue(':id_relation', $id_relation);
         $stmt->execute();
 

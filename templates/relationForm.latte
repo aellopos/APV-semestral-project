@@ -10,7 +10,7 @@
                     <label for="first_name">Person name</label>
                     <select class="form-control" type="text" name="person_name" required>
                     {if $type == 'update'}
-                        <option selected disabled value="{$relationData['id_person']}">{$relationData['first_name']} {$relationData['last_name']}</option>
+                        <option selected value="{$relationData['id_person']}">{$relationData['first_name']} {$relationData['last_name']}</option>
                     {else}
                         {foreach $relationData as $p}
                             <option value="{$p['id_person']}">{$p['first_name']} {$p['last_name']}</option>
@@ -18,9 +18,14 @@
                     {/if}
                     </select>
                 </div>
+
+                <div class="col-sm-3 form-group">
+                    <label for="description">Description</label>    
+                    <input class="form-control" type="text" name="description" placeholder="description" value="{if isset($relationData['description'])}{$relationData['description']}{/if}">
+                </div>
                 
                 <div class="col-sm-3 form-group">
-                    <label for="height">Relation type</label>    
+                    <label for="relation_type">Relation type</label>    
                     <select class="form-control" type="text" name="relation_type" required>
                         <option value="1" {if isset($relationData['name']) && $relationData['name'] == 'friend'}selected{/if}>friend</option>
                         <option value="2" {if isset($relationData['name']) && $relationData['name'] == 'enemy'}selected{/if}>enemy</option>
